@@ -1,0 +1,1375 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Let's Talk English | English Coach & Web Developer</title>
+    <meta name="description" content="Let's Talk English - Professional English communication coaching and modern web development services.">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        :root {
+            --primary: #3b82f6;
+            --primary-dark: #2563eb;
+            --primary-light: #93c5fd;
+            --bg: #f8fafc;
+            --bg-dark: #0f172a;
+            --surface: #ffffff;
+            --surface-dark: #1e293b;
+            --text: #1e293b;
+            --text-dark: #f1f5f9;
+            --text-muted: #64748b;
+            --text-muted-dark: #94a3b8;
+            --border: #e2e8f0;
+            --border-dark: #334155;
+            --shadow: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -2px rgba(0,0,0,0.1);
+            --shadow-lg: 0 20px 25px -5px rgba(0,0,0,0.1), 0 8px 10px -6px rgba(0,0,0,0.1);
+            --glass: rgba(255,255,255,0.7);
+            --glass-dark: rgba(30,41,59,0.7);
+        }
+
+        [data-theme="dark"] {
+            --bg: var(--bg-dark);
+            --surface: var(--surface-dark);
+            --text: var(--text-dark);
+            --text-muted: var(--text-muted-dark);
+            --border: var(--border-dark);
+            --glass: var(--glass-dark);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        html { scroll-behavior: smooth; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+            overflow-x: hidden;
+            transition: background 0.3s, color 0.3s;
+        }
+
+        /* Loading Screen */
+        #loader {
+            position: fixed; inset: 0; z-index: 10000;
+            background: var(--bg);
+            display: flex; align-items: center; justify-content: center;
+            flex-direction: column; gap: 20px;
+            transition: opacity 0.5s, visibility 0.5s;
+        }
+        #loader.hidden { opacity: 0; visibility: hidden; }
+        .loader-spinner {
+            width: 60px; height: 60px;
+            border: 4px solid var(--border);
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .loader-text {
+            font-size: 1.2rem; font-weight: 600;
+            color: var(--primary);
+            animation: pulse 1.5s ease-in-out infinite;
+        }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+
+        /* Navbar */
+        .navbar {
+            position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
+            padding: 1rem 5%;
+            display: flex; align-items: center; justify-content: space-between;
+            transition: all 0.3s ease;
+        }
+        .navbar.scrolled {
+            background: var(--glass);
+            backdrop-filter: blur(20px);
+            box-shadow: var(--shadow);
+            padding: 0.75rem 5%;
+        }
+        .logo {
+            font-size: 1.5rem; font-weight: 800;
+            color: var(--primary);
+            text-decoration: none;
+            display: flex; align-items: center; gap: 0.5rem;
+        }
+        .logo i { font-size: 1.8rem; }
+        .nav-links {
+            display: flex; align-items: center; gap: 2rem;
+            list-style: none;
+        }
+        .nav-links a {
+            text-decoration: none; color: var(--text);
+            font-weight: 500; font-size: 0.95rem;
+            position: relative; padding: 0.25rem 0;
+            transition: color 0.3s;
+        }
+        .nav-links a::after {
+            content: ''; position: absolute; bottom: 0; left: 0;
+            width: 0; height: 2px; background: var(--primary);
+            transition: width 0.3s;
+        }
+        .nav-links a:hover::after, .nav-links a.active::after { width: 100%; }
+        .nav-links a:hover { color: var(--primary); }
+
+        .nav-actions { display: flex; align-items: center; gap: 1rem; }
+        .theme-toggle {
+            width: 44px; height: 44px; border-radius: 50%;
+            border: none; background: var(--surface);
+            color: var(--text); cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.1rem; box-shadow: var(--shadow);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        .theme-toggle:hover { transform: scale(1.1); }
+        .hamburger {
+            display: none; flex-direction: column; gap: 5px;
+            background: none; border: none; cursor: pointer;
+            padding: 5px; z-index: 1001;
+        }
+        .hamburger span {
+            display: block; width: 25px; height: 2px;
+            background: var(--text); transition: all 0.3s;
+        }
+        .hamburger.active span:nth-child(1) { transform: rotate(45deg) translate(5px, 5px); }
+        .hamburger.active span:nth-child(2) { opacity: 0; }
+        .hamburger.active span:nth-child(3) { transform: rotate(-45deg) translate(5px, -5px); }
+
+        /* Hero */
+        .hero {
+            min-height: 100vh;
+            display: flex; align-items: center;
+            padding: 8rem 5% 4rem;
+            position: relative; overflow: hidden;
+            background: linear-gradient(135deg, var(--bg) 0%, #e0f2fe 50%, var(--bg) 100%);
+        }
+        [data-theme="dark"] .hero {
+            background: linear-gradient(135deg, var(--bg) 0%, #1e3a5f 50%, var(--bg) 100%);
+        }
+        .hero-shapes {
+            position: absolute; inset: 0; overflow: hidden; pointer-events: none;
+        }
+        .shape {
+            position: absolute; border-radius: 50%;
+            opacity: 0.4; animation: float 6s ease-in-out infinite;
+        }
+        .shape-1 { width: 300px; height: 300px; background: linear-gradient(135deg, var(--primary-light), var(--primary)); top: 10%; left: -5%; animation-delay: 0s; }
+        .shape-2 { width: 200px; height: 200px; background: linear-gradient(135deg, #a5f3fc, #06b6d4); top: 60%; right: -3%; animation-delay: 2s; }
+        .shape-3 { width: 150px; height: 150px; background: linear-gradient(135deg, #ddd6fe, #8b5cf6); bottom: 10%; left: 30%; animation-delay: 4s; }
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-30px) rotate(10deg); }
+        }
+        .hero-content {
+            max-width: 1200px; margin: 0 auto;
+            display: grid; grid-template-columns: 1fr 1fr; gap: 4rem;
+            align-items: center; position: relative; z-index: 1;
+        }
+        .hero-text h1 {
+            font-size: clamp(2.5rem, 5vw, 4rem);
+            font-weight: 800; line-height: 1.1; margin-bottom: 1.5rem;
+            background: linear-gradient(135deg, var(--text), var(--primary));
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        }
+        .hero-text .typing-text {
+            font-size: clamp(1.1rem, 2vw, 1.35rem);
+            color: var(--text-muted); margin-bottom: 2rem;
+            min-height: 3rem;
+        }
+        .hero-buttons { display: flex; gap: 1rem; flex-wrap: wrap; }
+        .btn {
+            padding: 0.875rem 2rem; border-radius: 50px;
+            font-weight: 600; font-size: 1rem;
+            text-decoration: none; cursor: pointer;
+            border: none; display: inline-flex; align-items: center; gap: 0.5rem;
+            transition: all 0.3s; position: relative; overflow: hidden;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white; box-shadow: 0 4px 15px rgba(59,130,246,0.4);
+        }
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(59,130,246,0.5);
+        }
+        .btn-secondary {
+            background: var(--surface); color: var(--text);
+            border: 2px solid var(--border); box-shadow: var(--shadow);
+        }
+        .btn-secondary:hover {
+            border-color: var(--primary); color: var(--primary);
+            transform: translateY(-2px);
+        }
+        .btn-ripple {
+            position: absolute; border-radius: 50%;
+            background: rgba(255,255,255,0.4);
+            transform: scale(0); animation: ripple 0.6s linear;
+            pointer-events: none;
+        }
+        @keyframes ripple { to { transform: scale(4); opacity: 0; } }
+
+        .hero-illustration {
+            position: relative; display: flex; align-items: center; justify-content: center;
+        }
+        .laptop-mockup {
+            width: 100%; max-width: 500px;
+            background: var(--surface);
+            border-radius: 20px;
+            box-shadow: var(--shadow-lg);
+            padding: 1.5rem;
+            position: relative;
+            animation: float 6s ease-in-out infinite;
+        }
+        .laptop-screen {
+            background: linear-gradient(135deg, #1e293b, #334155);
+            border-radius: 12px; padding: 1.5rem;
+            min-height: 280px; position: relative;
+            overflow: hidden;
+        }
+        .code-line {
+            height: 8px; border-radius: 4px; margin-bottom: 10px;
+            background: rgba(255,255,255,0.1);
+            animation: codePulse 2s ease-in-out infinite;
+        }
+        .code-line:nth-child(1) { width: 80%; }
+        .code-line:nth-child(2) { width: 60%; animation-delay: 0.2s; }
+        .code-line:nth-child(3) { width: 90%; animation-delay: 0.4s; }
+        .code-line:nth-child(4) { width: 50%; animation-delay: 0.6s; }
+        .code-line:nth-child(5) { width: 70%; animation-delay: 0.8s; }
+        @keyframes codePulse {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 0.7; }
+        }
+        .speech-bubble {
+            position: absolute;
+            background: var(--primary);
+            color: white; padding: 0.75rem 1.25rem;
+            border-radius: 16px; font-size: 0.85rem; font-weight: 600;
+            box-shadow: 0 4px 15px rgba(59,130,246,0.3);
+        }
+        .bubble-1 { top: -20px; right: -10px; animation: float 4s ease-in-out infinite; }
+        .bubble-2 { bottom: 30px; left: -20px; background: #10b981; animation: float 5s ease-in-out infinite 1s; }
+        .bubble-3 { top: 50%; right: -30px; background: #f59e0b; animation: float 4.5s ease-in-out infinite 0.5s; }
+
+        /* Sections */
+        section { padding: 6rem 5%; }
+        .section-header {
+            text-align: center; max-width: 600px; margin: 0 auto 4rem;
+        }
+        .section-header h2 {
+            font-size: clamp(2rem, 4vw, 2.75rem); font-weight: 800;
+            margin-bottom: 1rem;
+        }
+        .section-header p {
+            color: var(--text-muted); font-size: 1.1rem;
+        }
+        .section-tag {
+            display: inline-block; padding: 0.4rem 1rem;
+            background: rgba(59,130,246,0.1); color: var(--primary);
+            border-radius: 50px; font-size: 0.85rem; font-weight: 600;
+            margin-bottom: 1rem;
+        }
+
+        /* About */
+        .about-grid {
+            max-width: 1200px; margin: 0 auto;
+            display: grid; grid-template-columns: 1fr 1fr; gap: 4rem;
+            align-items: center;
+        }
+        .about-image {
+            position: relative;
+        }
+        .about-image img {
+            width: 100%; max-width: 450px;
+            border-radius: 24px;
+            box-shadow: var(--shadow-lg);
+            transition: transform 0.5s;
+        }
+        .about-image:hover img { transform: scale(1.02); }
+        .about-image::before {
+            content: ''; position: absolute; inset: -20px;
+            border: 2px solid var(--primary);
+            border-radius: 32px; z-index: -1; opacity: 0.3;
+        }
+        .about-content h3 {
+            font-size: 2rem; font-weight: 700; margin-bottom: 1rem;
+        }
+        .about-content p {
+            color: var(--text-muted); margin-bottom: 1.5rem; font-size: 1.05rem;
+        }
+        .stats-grid {
+            display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem;
+            margin-top: 2rem;
+        }
+        .stat-card {
+            background: var(--surface);
+            border-radius: 16px; padding: 1.5rem;
+            text-align: center; box-shadow: var(--shadow);
+            border: 1px solid var(--border);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-lg);
+        }
+        .stat-number {
+            font-size: 2.5rem; font-weight: 800;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        }
+        .stat-label { color: var(--text-muted); font-size: 0.9rem; margin-top: 0.5rem; }
+
+        /* Services */
+        .services-grid {
+            max-width: 1200px; margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+        }
+        .service-card {
+            background: var(--surface);
+            border-radius: 20px; padding: 2rem;
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow);
+            transition: all 0.4s ease;
+            position: relative; overflow: hidden;
+        }
+        .service-card::before {
+            content: ''; position: absolute; top: 0; left: 0; right: 0;
+            height: 4px; background: linear-gradient(90deg, var(--primary), var(--primary-dark));
+            transform: scaleX(0); transition: transform 0.4s;
+        }
+        .service-card:hover::before { transform: scaleX(1); }
+        .service-card:hover {
+            transform: translateY(-8px);
+            box-shadow: var(--shadow-lg);
+        }
+        .service-icon {
+            width: 60px; height: 60px; border-radius: 16px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.5rem; margin-bottom: 1.5rem;
+            background: rgba(59,130,246,0.1); color: var(--primary);
+            transition: all 0.3s;
+        }
+        .service-card:hover .service-icon {
+            background: var(--primary); color: white;
+            transform: scale(1.1) rotate(5deg);
+        }
+        .service-card h3 { font-size: 1.25rem; margin-bottom: 0.75rem; }
+        .service-card p { color: var(--text-muted); font-size: 0.95rem; }
+
+        /* Portfolio */
+        .portfolio-filters {
+            display: flex; justify-content: center; gap: 0.75rem;
+            margin-bottom: 3rem; flex-wrap: wrap;
+        }
+        .filter-btn {
+            padding: 0.6rem 1.5rem; border-radius: 50px;
+            border: 2px solid var(--border); background: var(--surface);
+            color: var(--text); font-weight: 500; cursor: pointer;
+            transition: all 0.3s;
+        }
+        .filter-btn.active, .filter-btn:hover {
+            background: var(--primary); color: white; border-color: var(--primary);
+        }
+        .portfolio-grid {
+            max-width: 1200px; margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 2rem;
+        }
+        .portfolio-card {
+            background: var(--surface);
+            border-radius: 20px; overflow: hidden;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border);
+            transition: all 0.4s;
+        }
+        .portfolio-card:hover {
+            transform: translateY(-8px);
+            box-shadow: var(--shadow-lg);
+        }
+        .portfolio-img {
+            width: 100%; height: 220px;
+            background: linear-gradient(135deg, #e0f2fe, #bfdbfe);
+            display: flex; align-items: center; justify-content: center;
+            position: relative; overflow: hidden;
+        }
+        [data-theme="dark"] .portfolio-img {
+            background: linear-gradient(135deg, #1e3a5f, #1e293b);
+        }
+        .portfolio-img i {
+            font-size: 4rem; color: var(--primary); opacity: 0.5;
+            transition: all 0.3s;
+        }
+        .portfolio-card:hover .portfolio-img i {
+            transform: scale(1.2); opacity: 0.8;
+        }
+        .portfolio-overlay {
+            position: absolute; inset: 0;
+            background: rgba(59,130,246,0.9);
+            display: flex; align-items: center; justify-content: center;
+            gap: 1rem; opacity: 0; transition: opacity 0.3s;
+        }
+        .portfolio-card:hover .portfolio-overlay { opacity: 1; }
+        .portfolio-overlay a {
+            width: 45px; height: 45px; border-radius: 50%;
+            background: white; color: var(--primary);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.1rem; text-decoration: none;
+            transform: translateY(20px); transition: all 0.3s;
+        }
+        .portfolio-card:hover .portfolio-overlay a { transform: translateY(0); }
+        .portfolio-overlay a:nth-child(2) { transition-delay: 0.1s; }
+        .portfolio-info { padding: 1.5rem; }
+        .portfolio-info h3 { font-size: 1.2rem; margin-bottom: 0.5rem; }
+        .portfolio-info p { color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1rem; }
+        .tech-tags {
+            display: flex; gap: 0.5rem; flex-wrap: wrap;
+        }
+        .tech-tag {
+            padding: 0.25rem 0.75rem; border-radius: 50px;
+            background: rgba(59,130,246,0.1); color: var(--primary);
+            font-size: 0.75rem; font-weight: 600;
+        }
+
+        /* Skills */
+        .skills-grid {
+            max-width: 800px; margin: 0 auto;
+            display: flex; flex-direction: column; gap: 1.5rem;
+        }
+        .skill-item {
+            background: var(--surface);
+            border-radius: 16px; padding: 1.5rem;
+            box-shadow: var(--shadow); border: 1px solid var(--border);
+        }
+        .skill-header {
+            display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 0.75rem;
+        }
+        .skill-header span { font-weight: 600; }
+        .skill-header .skill-percent { color: var(--primary); font-weight: 700; }
+        .skill-bar {
+            height: 10px; border-radius: 5px;
+            background: var(--border); overflow: hidden;
+        }
+        .skill-progress {
+            height: 100%; border-radius: 5px;
+            background: linear-gradient(90deg, var(--primary), var(--primary-dark));
+            width: 0; transition: width 1.5s ease-out;
+            position: relative;
+        }
+        .skill-progress::after {
+            content: ''; position: absolute; right: 0; top: 0; bottom: 0;
+            width: 20px; background: rgba(255,255,255,0.3);
+            filter: blur(4px);
+        }
+
+        /* Testimonials */
+        .testimonials-container {
+            max-width: 800px; margin: 0 auto;
+            position: relative;
+        }
+        .testimonial-track {
+            display: flex; transition: transform 0.5s ease;
+        }
+        .testimonial-card {
+            min-width: 100%; padding: 0 1rem;
+        }
+        .testimonial-inner {
+            background: var(--surface);
+            border-radius: 24px; padding: 2.5rem;
+            box-shadow: var(--shadow); border: 1px solid var(--border);
+            text-align: center;
+        }
+        .testimonial-avatar {
+            width: 80px; height: 80px; border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary-light), var(--primary));
+            margin: 0 auto 1.5rem;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 2rem; color: white;
+        }
+        .stars { color: #f59e0b; margin-bottom: 1rem; font-size: 1.1rem; }
+        .testimonial-text {
+            font-size: 1.1rem; font-style: italic;
+            color: var(--text-muted); margin-bottom: 1.5rem;
+            line-height: 1.8;
+        }
+        .testimonial-name { font-weight: 700; font-size: 1.1rem; }
+        .testimonial-role { color: var(--text-muted); font-size: 0.9rem; }
+        .testimonial-nav {
+            display: flex; justify-content: center; gap: 0.75rem;
+            margin-top: 2rem;
+        }
+        .testimonial-dot {
+            width: 12px; height: 12px; border-radius: 50%;
+            border: 2px solid var(--border); background: transparent;
+            cursor: pointer; transition: all 0.3s;
+        }
+        .testimonial-dot.active {
+            background: var(--primary); border-color: var(--primary);
+            width: 30px; border-radius: 6px;
+        }
+
+        /* Contact */
+        .contact-grid {
+            max-width: 1200px; margin: 0 auto;
+            display: grid; grid-template-columns: 1fr 1fr; gap: 4rem;
+        }
+        .contact-form {
+            background: var(--surface);
+            border-radius: 24px; padding: 2.5rem;
+            box-shadow: var(--shadow); border: 1px solid var(--border);
+        }
+        .form-group { margin-bottom: 1.5rem; }
+        .form-group label {
+            display: block; margin-bottom: 0.5rem;
+            font-weight: 600; font-size: 0.9rem;
+        }
+        .form-group input,
+        .form-group textarea {
+            width: 100%; padding: 0.875rem 1rem;
+            border: 2px solid var(--border); border-radius: 12px;
+            background: var(--bg); color: var(--text);
+            font-size: 1rem; font-family: inherit;
+            transition: border-color 0.3s;
+        }
+        .form-group input:focus,
+        .form-group textarea:focus {
+            outline: none; border-color: var(--primary);
+        }
+        .form-group textarea { min-height: 140px; resize: vertical; }
+        .contact-info h3 { font-size: 1.5rem; margin-bottom: 1.5rem; }
+        .contact-item {
+            display: flex; align-items: center; gap: 1rem;
+            margin-bottom: 1.5rem; padding: 1rem;
+            background: var(--surface); border-radius: 16px;
+            box-shadow: var(--shadow); border: 1px solid var(--border);
+            transition: transform 0.3s;
+        }
+        .contact-item:hover { transform: translateX(5px); }
+        .contact-item i {
+            width: 50px; height: 50px; border-radius: 12px;
+            background: rgba(59,130,246,0.1); color: var(--primary);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.2rem;
+        }
+        .contact-item div span { display: block; }
+        .contact-item div .label { font-size: 0.85rem; color: var(--text-muted); }
+        .contact-item div .value { font-weight: 600; }
+        .social-links {
+            display: flex; gap: 1rem; margin-top: 2rem;
+        }
+        .social-links a {
+            width: 48px; height: 48px; border-radius: 12px;
+            background: var(--surface); color: var(--text);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.2rem; text-decoration: none;
+            box-shadow: var(--shadow); border: 1px solid var(--border);
+            transition: all 0.3s;
+        }
+        .social-links a:hover {
+            background: var(--primary); color: white;
+            transform: translateY(-3px);
+        }
+        .map-placeholder {
+            margin-top: 2rem; height: 200px; border-radius: 16px;
+            background: linear-gradient(135deg, #e0f2fe, #bfdbfe);
+            display: flex; align-items: center; justify-content: center;
+            color: var(--primary); font-size: 3rem;
+        }
+        [data-theme="dark"] .map-placeholder {
+            background: linear-gradient(135deg, #1e3a5f, #1e293b);
+        }
+
+        /* Footer */
+        footer {
+            background: var(--surface);
+            border-top: 1px solid var(--border);
+            padding: 4rem 5% 2rem;
+        }
+        .footer-grid {
+            max-width: 1200px; margin: 0 auto;
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr;
+            gap: 3rem; margin-bottom: 3rem;
+        }
+        .footer-brand .logo { margin-bottom: 1rem; }
+        .footer-brand p { color: var(--text-muted); font-size: 0.95rem; }
+        .footer-col h4 { font-size: 1rem; margin-bottom: 1.5rem; }
+        .footer-col ul { list-style: none; }
+        .footer-col ul li { margin-bottom: 0.75rem; }
+        .footer-col ul li a {
+            color: var(--text-muted); text-decoration: none;
+            transition: color 0.3s;
+        }
+        .footer-col ul li a:hover { color: var(--primary); }
+        .footer-bottom {
+            max-width: 1200px; margin: 0 auto;
+            padding-top: 2rem; border-top: 1px solid var(--border);
+            display: flex; justify-content: space-between; align-items: center;
+            flex-wrap: wrap; gap: 1rem;
+        }
+        .footer-bottom p { color: var(--text-muted); font-size: 0.9rem; }
+
+        /* Back to Top */
+        .back-to-top {
+            position: fixed; bottom: 2rem; right: 2rem;
+            width: 50px; height: 50px; border-radius: 50%;
+            background: var(--primary); color: white;
+            border: none; cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.2rem; box-shadow: 0 4px 15px rgba(59,130,246,0.4);
+            opacity: 0; visibility: hidden; transform: translateY(20px);
+            transition: all 0.3s; z-index: 999;
+        }
+        .back-to-top.visible {
+            opacity: 1; visibility: visible; transform: translateY(0);
+        }
+        .back-to-top:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(59,130,246,0.5);
+        }
+
+        /* Animations */
+        .fade-in {
+            opacity: 0; transform: translateY(30px);
+            transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+        }
+        .fade-in.visible {
+            opacity: 1; transform: translateY(0);
+        }
+
+        /* Mobile Menu */
+        .mobile-menu {
+            position: fixed; inset: 0; z-index: 999;
+            background: var(--bg);
+            display: flex; flex-direction: column;
+            align-items: center; justify-content: center;
+            gap: 2rem;
+            opacity: 0; visibility: hidden;
+            transition: all 0.3s;
+        }
+        .mobile-menu.active { opacity: 1; visibility: visible; }
+        .mobile-menu a {
+            font-size: 1.5rem; font-weight: 700;
+            color: var(--text); text-decoration: none;
+            transition: color 0.3s;
+        }
+        .mobile-menu a:hover { color: var(--primary); }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .hero-content { grid-template-columns: 1fr; text-align: center; }
+            .hero-buttons { justify-content: center; }
+            .hero-illustration { order: -1; }
+            .about-grid { grid-template-columns: 1fr; text-align: center; }
+            .about-image { order: -1; }
+            .stats-grid { max-width: 500px; margin: 2rem auto 0; }
+            .contact-grid { grid-template-columns: 1fr; }
+            .footer-grid { grid-template-columns: 1fr 1fr; }
+        }
+        @media (max-width: 768px) {
+            .nav-links { display: none; }
+            .hamburger { display: flex; }
+            .stats-grid { grid-template-columns: 1fr; }
+            .footer-grid { grid-template-columns: 1fr; text-align: center; }
+            .footer-bottom { flex-direction: column; text-align: center; }
+        }
+    </style>
+<base target="_blank">
+</head>
+<body>
+    <div id="loader">
+        <div class="loader-spinner"></div>
+        <div class="loader-text">Let's Talk English</div>
+    </div>
+
+    <div class="mobile-menu" id="mobileMenu">
+        <a href="#home" onclick="closeMobileMenu()">Home</a>
+        <a href="#about" onclick="closeMobileMenu()">About</a>
+        <a href="#services" onclick="closeMobileMenu()">Services</a>
+        <a href="#portfolio" onclick="closeMobileMenu()">Portfolio</a>
+        <a href="#testimonials" onclick="closeMobileMenu()">Testimonials</a>
+        <a href="#contact" onclick="closeMobileMenu()">Contact</a>
+    </div>
+
+    <nav class="navbar" id="navbar">
+        <a href="#home" class="logo">
+            <i class="fas fa-comments"></i>
+            Let's Talk English
+        </a>
+        <ul class="nav-links">
+            <li><a href="#home" class="active">Home</a></li>
+            <li><a href="#about">About</a></li>
+            <li><a href="#services">Services</a></li>
+            <li><a href="#portfolio">Portfolio</a></li>
+            <li><a href="#testimonials">Testimonials</a></li>
+            <li><a href="#contact">Contact</a></li>
+        </ul>
+        <div class="nav-actions">
+            <button class="theme-toggle" id="themeToggle" aria-label="Toggle dark mode">
+                <i class="fas fa-moon"></i>
+            </button>
+            <button class="hamburger" id="hamburger" aria-label="Menu">
+                <span></span><span></span><span></span>
+            </button>
+        </div>
+    </nav>
+
+    <section class="hero" id="home">
+        <div class="hero-shapes">
+            <div class="shape shape-1"></div>
+            <div class="shape shape-2"></div>
+            <div class="shape shape-3"></div>
+        </div>
+        <div class="hero-content">
+            <div class="hero-text">
+                <h1>Speak English with Confidence</h1>
+                <p class="typing-text" id="typingText"></p>
+                <div class="hero-buttons">
+                    <a href="#services" class="btn btn-primary" onclick="createRipple(event)">
+                        <i class="fas fa-rocket"></i> Start Learning
+                    </a>
+                    <a href="#portfolio" class="btn btn-secondary" onclick="createRipple(event)">
+                        <i class="fas fa-briefcase"></i> View Portfolio
+                    </a>
+                </div>
+            </div>
+            <div class="hero-illustration">
+                <div class="laptop-mockup">
+                    <div class="laptop-screen">
+                        <div class="code-line"></div>
+                        <div class="code-line"></div>
+                        <div class="code-line"></div>
+                        <div class="code-line"></div>
+                        <div class="code-line"></div>
+                    </div>
+                    <div class="speech-bubble bubble-1">Hello!</div>
+                    <div class="speech-bubble bubble-2">Code & Talk</div>
+                    <div class="speech-bubble bubble-3">Fluent!</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="about">
+        <div class="section-header fade-in">
+            <span class="section-tag">About Me</span>
+            <h2>Bridging Communication & Technology</h2>
+            <p>Passionate about helping people communicate effectively while building beautiful digital experiences.</p>
+        </div>
+        <div class="about-grid">
+            <div class="about-image fade-in">
+                <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=450&h=550&fit=crop&crop=face" alt="Professional portrait">
+            </div>
+            <div class="about-content fade-in">
+                <h3>Empowering Through Language & Code</h3>
+                <p>With over 5 years of experience teaching English and developing websites, I combine the art of communication with the precision of technology. My mission is to help students and professionals speak English with confidence while delivering modern, responsive web solutions.</p>
+                <p>I believe that great communication — whether through spoken words or digital interfaces — has the power to transform lives and businesses. Every lesson I teach and every website I build is crafted with care, attention to detail, and a commitment to excellence.</p>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-number" data-target="500">0</div>
+                        <div class="stat-label">Students Helped</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" data-target="75">0</div>
+                        <div class="stat-label">Projects Completed</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" data-target="5">0</div>
+                        <div class="stat-label">Years Experience</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="services" style="background: var(--surface);">
+        <div class="section-header fade-in">
+            <span class="section-tag">Services</span>
+            <h2>What I Offer</h2>
+            <p>Comprehensive English coaching and web development services tailored to your needs.</p>
+        </div>
+        <div class="services-grid">
+            <div class="service-card fade-in">
+                <div class="service-icon"><i class="fas fa-microphone"></i></div>
+                <h3>Spoken English Coaching</h3>
+                <p>Build fluency and confidence through interactive conversation practice, pronunciation training, and real-world speaking scenarios.</p>
+            </div>
+            <div class="service-card fade-in">
+                <div class="service-icon"><i class="fas fa-book"></i></div>
+                <h3>Grammar Lessons</h3>
+                <p>Master English grammar with structured lessons, practical exercises, and personalized feedback to eliminate common mistakes.</p>
+            </div>
+            <div class="service-card fade-in">
+                <div class="service-icon"><i class="fas fa-certificate"></i></div>
+                <h3>IELTS Preparation</h3>
+                <p>Comprehensive IELTS coaching covering all four modules — Listening, Reading, Writing, and Speaking — with proven strategies.</p>
+            </div>
+            <div class="service-card fade-in">
+                <div class="service-icon"><i class="fas fa-paint-brush"></i></div>
+                <h3>Website Design</h3>
+                <p>Beautiful, modern website designs that capture your brand identity and engage your audience from the first click.</p>
+            </div>
+            <div class="service-card fade-in">
+                <div class="service-icon"><i class="fas fa-code"></i></div>
+                <h3>Frontend Development</h3>
+                <p>Clean, semantic HTML, CSS, and JavaScript code that brings designs to life with smooth interactions and fast performance.</p>
+            </div>
+            <div class="service-card fade-in">
+                <div class="service-icon"><i class="fas fa-mobile-alt"></i></div>
+                <h3>Responsive Development</h3>
+                <p>Websites that look and work perfectly on every device — from large desktop screens to smartphones and tablets.</p>
+            </div>
+            <div class="service-card fade-in">
+                <div class="service-icon"><i class="fas fa-tools"></i></div>
+                <h3>Website Maintenance</h3>
+                <p>Ongoing support, updates, and optimization to keep your website secure, fast, and always up-to-date.</p>
+            </div>
+        </div>
+    </section>
+    <section id="portfolio">
+        <div class="section-header fade-in">
+            <span class="section-tag">Portfolio</span>
+            <h2>Recent Projects</h2>
+            <p>A selection of my latest web development work across various industries.</p>
+        </div>
+        <div class="portfolio-filters fade-in">
+            <button class="filter-btn active" data-filter="all">All</button>
+            <button class="filter-btn" data-filter="web">Web Design</button>
+            <button class="filter-btn" data-filter="app">Applications</button>
+            <button class="filter-btn" data-filter="ecommerce">E-commerce</button>
+        </div>
+        <div class="portfolio-grid">
+            <div class="portfolio-card fade-in" data-category="web">
+                <div class="portfolio-img">
+                    <i class="fas fa-user"></i>
+                    <div class="portfolio-overlay">
+                        <a href="#" aria-label="Live Demo"><i class="fas fa-external-link-alt"></i></a>
+                        <a href="#" aria-label="GitHub"><i class="fab fa-github"></i></a>
+                    </div>
+                </div>
+                <div class="portfolio-info">
+                    <h3>Personal Portfolio</h3>
+                    <p>A sleek, modern portfolio website showcasing creative work with smooth animations.</p>
+                    <div class="tech-tags">
+                        <span class="tech-tag">HTML5</span>
+                        <span class="tech-tag">CSS3</span>
+                        <span class="tech-tag">JavaScript</span>
+                    </div>
+                </div>
+            </div>
+            <div class="portfolio-card fade-in" data-category="web">
+                <div class="portfolio-img">
+                    <i class="fas fa-building"></i>
+                    <div class="portfolio-overlay">
+                        <a href="#" aria-label="Live Demo"><i class="fas fa-external-link-alt"></i></a>
+                        <a href="#" aria-label="GitHub"><i class="fab fa-github"></i></a>
+                    </div>
+                </div>
+                <div class="portfolio-info">
+                    <h3>Business Website</h3>
+                    <p>Professional corporate website with modern design and engaging user experience.</p>
+                    <div class="tech-tags">
+                        <span class="tech-tag">HTML5</span>
+                        <span class="tech-tag">CSS3</span>
+                        <span class="tech-tag">JavaScript</span>
+                    </div>
+                </div>
+            </div>
+            <div class="portfolio-card fade-in" data-category="web">
+                <div class="portfolio-img">
+                    <i class="fas fa-graduation-cap"></i>
+                    <div class="portfolio-overlay">
+                        <a href="#" aria-label="Live Demo"><i class="fas fa-external-link-alt"></i></a>
+                        <a href="#" aria-label="GitHub"><i class="fab fa-github"></i></a>
+                    </div>
+                </div>
+                <div class="portfolio-info">
+                    <h3>School Website</h3>
+                    <p>Educational institution website with course listings, faculty profiles, and events.</p>
+                    <div class="tech-tags">
+                        <span class="tech-tag">HTML5</span>
+                        <span class="tech-tag">CSS3</span>
+                        <span class="tech-tag">JavaScript</span>
+                    </div>
+                </div>
+            </div>
+            <div class="portfolio-card fade-in" data-category="app">
+                <div class="portfolio-img">
+                    <i class="fas fa-rocket"></i>
+                    <div class="portfolio-overlay">
+                        <a href="#" aria-label="Live Demo"><i class="fas fa-external-link-alt"></i></a>
+                        <a href="#" aria-label="GitHub"><i class="fab fa-github"></i></a>
+                    </div>
+                </div>
+                <div class="portfolio-info">
+                    <h3>Landing Page</h3>
+                    <p>High-converting landing page with compelling copy and smooth scroll animations.</p>
+                    <div class="tech-tags">
+                        <span class="tech-tag">HTML5</span>
+                        <span class="tech-tag">CSS3</span>
+                        <span class="tech-tag">JavaScript</span>
+                    </div>
+                </div>
+            </div>
+            <div class="portfolio-card fade-in" data-category="web">
+                <div class="portfolio-img">
+                    <i class="fas fa-utensils"></i>
+                    <div class="portfolio-overlay">
+                        <a href="#" aria-label="Live Demo"><i class="fas fa-external-link-alt"></i></a>
+                        <a href="#" aria-label="GitHub"><i class="fab fa-github"></i></a>
+                    </div>
+                </div>
+                <div class="portfolio-info">
+                    <h3>Restaurant Website</h3>
+                    <p>Elegant restaurant website with menu showcase, reservation system, and gallery.</p>
+                    <div class="tech-tags">
+                        <span class="tech-tag">HTML5</span>
+                        <span class="tech-tag">CSS3</span>
+                        <span class="tech-tag">JavaScript</span>
+                    </div>
+                </div>
+            </div>
+            <div class="portfolio-card fade-in" data-category="ecommerce">
+                <div class="portfolio-img">
+                    <i class="fas fa-shopping-cart"></i>
+                    <div class="portfolio-overlay">
+                        <a href="#" aria-label="Live Demo"><i class="fas fa-external-link-alt"></i></a>
+                        <a href="#" aria-label="GitHub"><i class="fab fa-github"></i></a>
+                    </div>
+                </div>
+                <div class="portfolio-info">
+                    <h3>E-commerce Website</h3>
+                    <p>Full-featured online store with product catalog, cart, and checkout functionality.</p>
+                    <div class="tech-tags">
+                        <span class="tech-tag">HTML5</span>
+                        <span class="tech-tag">CSS3</span>
+                        <span class="tech-tag">JavaScript</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="skills" style="background: var(--surface);">
+        <div class="section-header fade-in">
+            <span class="section-tag">Skills</span>
+            <h2>My Expertise</h2>
+            <p>Technical skills and proficiency levels in web development and design.</p>
+        </div>
+        <div class="skills-grid">
+            <div class="skill-item fade-in">
+                <div class="skill-header">
+                    <span><i class="fab fa-html5" style="color: #e34c26; margin-right: 0.5rem;"></i>HTML5</span>
+                    <span class="skill-percent">95%</span>
+                </div>
+                <div class="skill-bar"><div class="skill-progress" data-width="95"></div></div>
+            </div>
+            <div class="skill-item fade-in">
+                <div class="skill-header">
+                    <span><i class="fab fa-css3-alt" style="color: #264de4; margin-right: 0.5rem;"></i>CSS3</span>
+                    <span class="skill-percent">92%</span>
+                </div>
+                <div class="skill-bar"><div class="skill-progress" data-width="92"></div></div>
+            </div>
+            <div class="skill-item fade-in">
+                <div class="skill-header">
+                    <span><i class="fab fa-js" style="color: #f7df1e; margin-right: 0.5rem;"></i>JavaScript</span>
+                    <span class="skill-percent">88%</span>
+                </div>
+                <div class="skill-bar"><div class="skill-progress" data-width="88"></div></div>
+            </div>
+            <div class="skill-item fade-in">
+                <div class="skill-header">
+                    <span><i class="fas fa-mobile-alt" style="color: var(--primary); margin-right: 0.5rem;"></i>Responsive Design</span>
+                    <span class="skill-percent">94%</span>
+                </div>
+                <div class="skill-bar"><div class="skill-progress" data-width="94"></div></div>
+            </div>
+            <div class="skill-item fade-in">
+                <div class="skill-header">
+                    <span><i class="fas fa-paint-brush" style="color: #a855f7; margin-right: 0.5rem;"></i>UI/UX Design</span>
+                    <span class="skill-percent">85%</span>
+                </div>
+                <div class="skill-bar"><div class="skill-progress" data-width="85"></div></div>
+            </div>
+            <div class="skill-item fade-in">
+                <div class="skill-header">
+                    <span><i class="fab fa-github" style="color: var(--text); margin-right: 0.5rem;"></i>Git & GitHub</span>
+                    <span class="skill-percent">90%</span>
+                </div>
+                <div class="skill-bar"><div class="skill-progress" data-width="90"></div></div>
+            </div>
+        </div>
+    </section>
+    <section id="testimonials">
+        <div class="section-header fade-in">
+            <span class="section-tag">Testimonials</span>
+            <h2>What Students Say</h2>
+            <p>Real feedback from students and clients who have worked with me.</p>
+        </div>
+        <div class="testimonials-container fade-in">
+            <div class="testimonial-track" id="testimonialTrack">
+                <div class="testimonial-card">
+                    <div class="testimonial-inner">
+                        <div class="testimonial-avatar"><i class="fas fa-user"></i></div>
+                        <div class="stars"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i></div>
+                        <p class="testimonial-text">"The English coaching completely transformed my confidence. I went from hesitating to speak to giving presentations at work. The personalized approach made all the difference!"</p>
+                        <div class="testimonial-name">Sarah Mitchell</div>
+                        <div class="testimonial-role">Marketing Manager</div>
+                    </div>
+                </div>
+                <div class="testimonial-card">
+                    <div class="testimonial-inner">
+                        <div class="testimonial-avatar"><i class="fas fa-user"></i></div>
+                        <div class="stars"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i></div>
+                        <p class="testimonial-text">"I scored 8.0 on my IELTS test thanks to the excellent preparation strategies. The mock tests and detailed feedback helped me identify and fix my weak areas quickly."</p>
+                        <div class="testimonial-name">Raj Patel</div>
+                        <div class="testimonial-role">University Student</div>
+                    </div>
+                </div>
+                <div class="testimonial-card">
+                    <div class="testimonial-inner">
+                        <div class="testimonial-avatar"><i class="fas fa-user"></i></div>
+                        <div class="stars"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star-half-alt"></i></div>
+                        <p class="testimonial-text">"Our new business website exceeded all expectations. Professional, fast, and beautifully designed. The attention to detail in both design and code is remarkable."</p>
+                        <div class="testimonial-name">Emily Chen</div>
+                        <div class="testimonial-role">Business Owner</div>
+                    </div>
+                </div>
+                <div class="testimonial-card">
+                    <div class="testimonial-inner">
+                        <div class="testimonial-avatar"><i class="fas fa-user"></i></div>
+                        <div class="stars"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i></div>
+                        <p class="testimonial-text">"Grammar lessons were never this engaging! The interactive exercises and real-life examples made complex rules easy to understand and remember."</p>
+                        <div class="testimonial-name">Carlos Rodriguez</div>
+                        <div class="testimonial-role">Software Engineer</div>
+                    </div>
+                </div>
+            </div>
+            <div class="testimonial-nav">
+                <button class="testimonial-dot active" data-index="0"></button>
+                <button class="testimonial-dot" data-index="1"></button>
+                <button class="testimonial-dot" data-index="2"></button>
+                <button class="testimonial-dot" data-index="3"></button>
+            </div>
+        </div>
+    </section>
+
+    <section id="contact" style="background: var(--surface);">
+        <div class="section-header fade-in">
+            <span class="section-tag">Contact</span>
+            <h2>Get In Touch</h2>
+            <p>Ready to improve your English or start a web project? Let's talk!</p>
+        </div>
+        <div class="contact-grid">
+            <div class="contact-form fade-in">
+                <form id="contactForm" onsubmit="handleSubmit(event)">
+                    <div class="form-group">
+                        <label for="name">Your Name</label>
+                        <input type="text" id="name" name="name" placeholder="John Doe" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="email">Email Address</label>
+                        <input type="email" id="email" name="email" placeholder="john@example.com" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="subject">Subject</label>
+                        <input type="text" id="subject" name="subject" placeholder="English Coaching / Web Project" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="message">Message</label>
+                        <textarea id="message" name="message" placeholder="Tell me about your goals..." required></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary" style="width: 100%; justify-content: center;" onclick="createRipple(event)">
+                        <i class="fas fa-paper-plane"></i> Send Message
+                    </button>
+                </form>
+            </div>
+            <div class="contact-info fade-in">
+                <h3>Contact Information</h3>
+                <div class="contact-item">
+                    <i class="fas fa-envelope"></i>
+                    <div>
+                        <span class="label">Email</span>
+                        <span class="value">hello@letstalkenglish.com</span>
+                    </div>
+                </div>
+                <div class="contact-item">
+                    <i class="fas fa-phone"></i>
+                    <div>
+                        <span class="label">Phone</span>
+                        <span class="value">+1 (555) 123-4567</span>
+                    </div>
+                </div>
+                <div class="contact-item">
+                    <i class="fab fa-whatsapp"></i>
+                    <div>
+                        <span class="label">WhatsApp</span>
+                        <span class="value">+1 (555) 987-6543</span>
+                    </div>
+                </div>
+                <div class="social-links">
+                    <a href="#" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
+                    <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+                    <a href="#" aria-label="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
+                    <a href="#" aria-label="GitHub"><i class="fab fa-github"></i></a>
+                </div>
+                <div class="map-placeholder">
+                    <i class="fas fa-map-marker-alt"></i>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <div class="footer-grid">
+            <div class="footer-brand">
+                <a href="#home" class="logo">
+                    <i class="fas fa-comments"></i>
+                    Let's Talk English
+                </a>
+                <p>Empowering communication through language and technology. Helping you speak confidently and build beautifully online.</p>
+            </div>
+            <div class="footer-col">
+                <h4>Quick Links</h4>
+                <ul>
+                    <li><a href="#home">Home</a></li>
+                    <li><a href="#about">About</a></li>
+                    <li><a href="#services">Services</a></li>
+                    <li><a href="#portfolio">Portfolio</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>Services</h4>
+                <ul>
+                    <li><a href="#services">English Coaching</a></li>
+                    <li><a href="#services">IELTS Prep</a></li>
+                    <li><a href="#services">Web Design</a></li>
+                    <li><a href="#services">Development</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>Connect</h4>
+                <ul>
+                    <li><a href="#contact">Contact</a></li>
+                    <li><a href="#testimonials">Testimonials</a></li>
+                    <li><a href="#">Blog</a></li>
+                    <li><a href="#">FAQ</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2024 Let's Talk English. All rights reserved.</p>
+            <div class="social-links" style="margin-top: 0;">
+                <a href="#" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+                <a href="#" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
+                <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+                <a href="#" aria-label="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
+            </div>
+        </div>
+    </footer>
+
+    <button class="back-to-top" id="backToTop" aria-label="Back to top">
+        <i class="fas fa-arrow-up"></i>
+    </button>
+    <script>
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                document.getElementById('loader').classList.add('hidden');
+            }, 1500);
+        });
+
+        const themeToggle = document.getElementById('themeToggle');
+        const html = document.documentElement;
+        const savedTheme = localStorage.getItem('theme');
+        if (savedTheme) html.setAttribute('data-theme', savedTheme);
+        themeToggle.addEventListener('click', () => {
+            const current = html.getAttribute('data-theme');
+            const next = current === 'dark' ? 'light' : 'dark';
+            html.setAttribute('data-theme', next);
+            localStorage.setItem('theme', next);
+            themeToggle.innerHTML = next === 'dark' ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
+        });
+        if (savedTheme === 'dark') themeToggle.innerHTML = '<i class="fas fa-sun"></i>';
+
+        const hamburger = document.getElementById('hamburger');
+        const mobileMenu = document.getElementById('mobileMenu');
+        hamburger.addEventListener('click', () => {
+            hamburger.classList.toggle('active');
+            mobileMenu.classList.toggle('active');
+            document.body.style.overflow = mobileMenu.classList.contains('active') ? 'hidden' : '';
+        });
+        function closeMobileMenu() {
+            hamburger.classList.remove('active');
+            mobileMenu.classList.remove('active');
+            document.body.style.overflow = '';
+        }
+
+        const navbar = document.getElementById('navbar');
+        window.addEventListener('scroll', () => {
+            navbar.classList.toggle('scrolled', window.scrollY > 50);
+        });
+
+        const sections = document.querySelectorAll('section[id]');
+        const navLinks = document.querySelectorAll('.nav-links a');
+        window.addEventListener('scroll', () => {
+            let current = '';
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop - 100;
+                if (window.scrollY >= sectionTop) current = section.getAttribute('id');
+            });
+            navLinks.forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('href') === '#' + current) link.classList.add('active');
+            });
+        });
+
+        const typingText = document.getElementById('typingText');
+        const phrases = [
+            'Helping students and professionals improve their English communication while showcasing modern web development skills.',
+            'Expert English coaching combined with cutting-edge web design and development.',
+            'Transform your communication skills and digital presence with personalized guidance.'
+        ];
+        let phraseIndex = 0, charIndex = 0, isDeleting = false;
+        function type() {
+            const current = phrases[phraseIndex];
+            if (isDeleting) {
+                typingText.textContent = current.substring(0, charIndex - 1);
+                charIndex--;
+            } else {
+                typingText.textContent = current.substring(0, charIndex + 1);
+                charIndex++;
+            }
+            let speed = isDeleting ? 30 : 50;
+            if (!isDeleting && charIndex === current.length) {
+                speed = 2000;
+                isDeleting = true;
+            } else if (isDeleting && charIndex === 0) {
+                isDeleting = false;
+                phraseIndex = (phraseIndex + 1) % phrases.length;
+                speed = 500;
+            }
+            setTimeout(type, speed);
+        }
+        setTimeout(type, 1000);
+
+        const fadeElements = document.querySelectorAll('.fade-in');
+        const fadeObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                    fadeObserver.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.1 });
+        fadeElements.forEach(el => fadeObserver.observe(el));
+
+        const statNumbers = document.querySelectorAll('.stat-number');
+        const counterObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const target = parseInt(entry.target.dataset.target);
+                    let current = 0;
+                    const increment = target / 60;
+                    const updateCounter = () => {
+                        current += increment;
+                        if (current < target) {
+                            entry.target.textContent = Math.ceil(current) + '+';
+                            requestAnimationFrame(updateCounter);
+                        } else {
+                            entry.target.textContent = target + '+';
+                        }
+                    };
+                    updateCounter();
+                    counterObserver.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.5 });
+        statNumbers.forEach(el => counterObserver.observe(el));
+
+        const skillBars = document.querySelectorAll('.skill-progress');
+        const skillObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.width = entry.target.dataset.width + '%';
+                    skillObserver.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.5 });
+        skillBars.forEach(el => skillObserver.observe(el));
+
+        const filterBtns = document.querySelectorAll('.filter-btn');
+        const portfolioCards = document.querySelectorAll('.portfolio-card');
+        filterBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                filterBtns.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                const filter = btn.dataset.filter;
+                portfolioCards.forEach(card => {
+                    if (filter === 'all' || card.dataset.category === filter) {
+                        card.style.display = 'block';
+                        setTimeout(() => card.style.opacity = '1', 10);
+                    } else {
+                        card.style.opacity = '0';
+                        setTimeout(() => card.style.display = 'none', 300);
+                    }
+                });
+            });
+        });
+
+        const track = document.getElementById('testimonialTrack');
+        const dots = document.querySelectorAll('.testimonial-dot');
+        let currentSlide = 0;
+        const totalSlides = dots.length;
+        function goToSlide(index) {
+            currentSlide = index;
+            track.style.transform = 'translateX(-' + (index * 100) + '%)';
+            dots.forEach((dot, i) => dot.classList.toggle('active', i === index));
+        }
+        dots.forEach((dot, i) => {
+            dot.addEventListener('click', () => goToSlide(i));
+        });
+        setInterval(() => {
+            goToSlide((currentSlide + 1) % totalSlides);
+        }, 5000);
+
+        const backToTop = document.getElementById('backToTop');
+        window.addEventListener('scroll', () => {
+            backToTop.classList.toggle('visible', window.scrollY > 500);
+        });
+        backToTop.addEventListener('click', () => {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+
+        function createRipple(event) {
+            const btn = event.currentTarget;
+            const circle = document.createElement('span');
+            const diameter = Math.max(btn.clientWidth, btn.clientHeight);
+            const radius = diameter / 2;
+            circle.style.width = circle.style.height = diameter + 'px';
+            circle.style.left = (event.clientX - btn.getBoundingClientRect().left - radius) + 'px';
+            circle.style.top = (event.clientY - btn.getBoundingClientRect().top - radius) + 'px';
+            circle.classList.add('btn-ripple');
+            const ripple = btn.getElementsByClassName('btn-ripple')[0];
+            if (ripple) ripple.remove();
+            btn.appendChild(circle);
+        }
+
+        function handleSubmit(event) {
+            event.preventDefault();
+            const btn = event.target.querySelector('button[type="submit"]');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '<i class="fas fa-check"></i> Message Sent!';
+            btn.style.background = '#10b981';
+            setTimeout(() => {
+                btn.innerHTML = originalText;
+                btn.style.background = '';
+                event.target.reset();
+            }, 3000);
+        }
+    </script>
+</body>
+</html>
